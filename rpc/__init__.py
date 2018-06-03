@@ -103,7 +103,10 @@ class RPCRequest(Thread):
 
 class DaemonRPCRequest():
     def __init__(self, app):
-        self.port = 19734
+        if "--testnet" in sys.argv[1:]:
+            self.port = 29734
+        else:
+            self.port = 19734
         self.url = "http://localhost:%d/json_rpc" % self.port
         self.app = app
         
@@ -119,7 +122,10 @@ class DaemonRPCRequest():
     
 class WalletRPCRequest():
     def __init__(self, app, user_agent):
-        self.port = 19736
+        if "--testnet" in sys.argv[1:]:
+            self.port = 29736
+        else:
+            self.port = 19736
         self.url = "http://localhost:%d/json_rpc" % self.port
         self.app = app
         self.user_agent = user_agent

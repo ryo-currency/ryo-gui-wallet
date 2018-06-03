@@ -76,7 +76,13 @@ class ProcessManager(Thread):
 
 class SumokoindManager(ProcessManager):
     def __init__(self, resources_path, log_level=0, block_sync_size=10):
-        proc_args = u'%s/bin/sumokoind --log-level %d --block-sync-size %d' % (resources_path, log_level, block_sync_size)
+
+        if "--testnet" in sys.argv[1:]:
+            testnet_flag = '--testnet'
+        else:
+            testnet_flag = ''
+
+        proc_args = u'%s/bin/sumokoind --log-level %d --block-sync-size %d %s' % (resources_path, log_level, block_sync_size, testnet_flag)
         ProcessManager.__init__(self, proc_args, "sumokoind")
         self.synced = Event()
         self.stopped = Event()
@@ -103,12 +109,17 @@ class WalletCliManager(ProcessManager):
     fail_to_connect_str = "wallet failed to connect to daemon"
     
     def __init__(self, resources_path, wallet_file_path, wallet_log_path, restore_wallet=False, restore_height=0):
-        if not restore_wallet:
-            wallet_args = u'%s/bin/sumo-wallet-cli --generate-new-wallet=%s --log-file=%s' \
-                                                % (resources_path, wallet_file_path, wallet_log_path)
+        if "--testnet" in sys.argv[1:]:
+            testnet_flag = '--testnet'
         else:
-            wallet_args = u'%s/bin/sumo-wallet-cli --log-file=%s --restore-deterministic-wallet --restore-height %d' \
-                                                % (resources_path, wallet_log_path, restore_height)
+            testnet_flag = ''
+
+        if not restore_wallet:
+            wallet_args = u'%s/bin/sumo-wallet-cli --generate-new-wallet=%s --log-file=%s %s' \
+                                                % (resources_path, wallet_file_path, wallet_log_path, testnet_flag)
+        else:
+            wallet_args = u'%s/bin/sumo-wallet-cli --log-file=%s --restore-deterministic-wallet --restore-height %d %s' \
+                                                % (resources_path, wallet_log_path, restore_height, testnet_flag)
         ProcessManager.__init__(self, wallet_args, "sumo-wallet-cli")
         self.ready = Event()
         self.last_error = ""
@@ -119,6 +130,7 @@ class WalletCliManager(ProcessManager):
         height_regex = re.compile(r"Height (\d+) / (\d+)")
         is_ready_str = "Background refresh thread started"
         err_str = "Error:"
+
         for line in iter(self.proc.stdout.readline, b''):
             m_height = height_regex.search(line)
             if m_height: 
@@ -156,9 +168,17 @@ class WalletRPCManager(ProcessManager):
     def __init__(self, resources_path, wallet_file_path, wallet_password, app, log_level=1):
         self.user_agent = str(uuid4().hex)
         wallet_log_path = os.path.join(os.path.dirname(wallet_file_path), "sumo-wallet-rpc.log")
-        wallet_rpc_args = u'%s/bin/sumo-wallet-rpc --wallet-file %s --log-file %s --rpc-bind-port 19736 --user-agent %s --log-level %d' \
-                                            % (resources_path, wallet_file_path, wallet_log_path, self.user_agent, log_level)
-                                                                                
+
+        if "--testnet" in sys.argv[1:]:
+            testnet_flag = '--testnet'
+            rpc_bind_port = 29736
+        else:
+            testnet_flag = ''
+            rpc_bind_port = 9736
+            
+        wallet_rpc_args = u'%s/bin/sumo-wallet-rpc --wallet-file %s --log-file %s --rpc-bind-port %d --user-agent %s --log-level %d %s' \
+                                            % (resources_path, wallet_file_path, wallet_log_path, rpc_bind_port, self.user_agent, log_level, testnet_flag)
+
         ProcessManager.__init__(self, wallet_rpc_args, "sumo-wallet-rpc")
         sleep(0.2)
         self.send_command(wallet_password)
