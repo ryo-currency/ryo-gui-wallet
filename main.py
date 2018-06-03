@@ -23,7 +23,11 @@ file_hashes = [
         ('www/scripts/mustache.min.js', '3258bb61f5b69f33076dd0c91e13ddd2c7fe771882adff9345e90d4ab7c32426'),
         ('www/scripts/jquery.qrcode.min.js', 'f4ccf02b69092819ac24575c717a080c3b6c6d6161f1b8d82bf0bb523075032d'),
         ('www/scripts/utils.js', 'd0c6870ed19c92cd123c7443cb202c7629f9cd6807daed698485fda25214bdb4'),
-        
+
+        ('www/css/structure.css', 'f12c21c50150c652202366801a74443d412caf87210103860f4257ede988f99a'),
+        ('www/css/light-theme.css', '58ad4961791523bc259c4794ece88af47170db31eb00cc5f65e2a5289410b226'),
+        ('www/css/dark-theme.css', 'bae55461985c063e252135ba85495c9a16a8cf75e4b0a74a341d16923a8c69b7'),
+    
         ('www/css/bootstrap.min.css', '9d517cad6f1744ab5eba382ccf0f53969f7d326e1336a6c2771e82830bc2c5ac'),
         ('www/css/font-awesome.min.css', 'b8b02026a298258ce5069d7b6723c2034058d99220b6612b54bc0c5bf774dcfb'),
         

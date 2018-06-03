@@ -90,6 +90,10 @@ class AppSettings():
         
         "blockchain": {
             "height": 0,
+        },
+
+        "gui": {
+            "dark_mode": False
         }
     }
     
@@ -100,7 +104,8 @@ class AppSettings():
     def load(self):
         if os.path.exists(self.app_settings_filepath):
             try:
-                self.settings = json.loads(readFile(self.app_settings_filepath))
+                _settings = json.loads(readFile(self.app_settings_filepath))
+                self.merge(_settings, self.settings)
                 return True
             except Exception, err:
                 log("[AppSettings]>>> Load error:" + str(err), LEVEL_ERROR)
@@ -116,3 +121,19 @@ class AppSettings():
             return False
         
         return True
+
+    def merge(self, source, destination):
+        """
+        Source https://stackoverflow.com/questions/20656135/python-deep-merge-dictionary-data
+        This function will merge options from source into destination nested dicts
+        In our case, source will be the loaded data from app_settings.json
+        and destination will be the default settings dict
+        """
+        for key, value in source.items():
+            if isinstance(value, dict):
+                node = destination.setdefault(key, {})
+                self.merge(value, node)
+            else:
+                destination[key] = value
+            
+        return destination

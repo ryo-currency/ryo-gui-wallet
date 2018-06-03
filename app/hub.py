@@ -633,6 +633,10 @@ class Hub(QObject):
         self.on_load_app_settings_completed_event.emit( json.dumps(self.ui.app_settings.settings) )
         
     @Slot()
+    def quick_load_ui_settings(self):
+        self.on_quick_load_ui_settings_completed_event.emit( json.dumps(self.ui.app_settings.settings) )
+        
+    @Slot()
     def about_app(self):
         self.ui.about()
         
@@ -729,6 +733,13 @@ class Hub(QObject):
         self.on_new_wallet_show_info_event.emit(json.dumps(wallet_info))
     
     
+    @Slot(bool)
+    def set_dark_mode(self, is_dark_mode):
+        self.ui.app_settings.settings['gui']['dark_mode'] = is_dark_mode
+        self.ui.app_settings.save()
+        self.ui.toggleDarkQT()
+    
+        
     on_new_wallet_show_info_event = Signal(str)
     on_new_wallet_show_progress_event = Signal(str)
     on_new_wallet_ui_reset_event = Signal()
@@ -746,6 +757,7 @@ class Hub(QObject):
     on_load_tx_history_completed_event = Signal(str)
     on_view_wallet_key_completed_event = Signal(str, str)
     on_load_app_settings_completed_event = Signal(str)
+    on_quick_load_ui_settings_completed_event = Signal(str)
     on_restart_daemon_completed_event = Signal()
     on_paste_seed_words_event = Signal(str)
     on_update_wallet_loading_height_event = Signal(int, int)
