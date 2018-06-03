@@ -15,7 +15,10 @@ from PySide.QtNetwork import QLocalServer, QLocalSocket
 
 from utils.common import getSockDir, makeDir
 
-DATA_DIR = makeDir(os.path.join(getSockDir(), 'SumokoinGUIWallet'))
+if "--testnet" in sys.argv[1:]:
+    DATA_DIR = makeDir(os.path.join(getSockDir(), 'SumokoinGUIWallet', 'testnet'))
+else:
+    DATA_DIR = makeDir(os.path.join(getSockDir(), 'SumokoinGUIWallet'))
     
 class QSingleApplication(QApplication):
     sock_file = 'sumokoin_wallet_sock'
@@ -43,7 +46,10 @@ class QSingleApplication(QApplication):
     def startApplication(self, first_start=True):
         self.m_server = QLocalServer()
         if self.m_server.listen(self.sock_file):
-            print( "Starting app..." )
+            if "--testnet" in sys.argv[1:]:
+                print( "Starting app... TESTNET MODE" )
+            else:
+                print( "Starting app..." )
             self.appMain.run()
         else:
             if not first_start:

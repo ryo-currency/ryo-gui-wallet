@@ -859,7 +859,10 @@ html ="""
                 }
                 else if(!((address.substr(0, 4) == "Sumo" && address.length == 99) || 
                     (address.substr(0, 4) == "Sumi"  && address.length == 110) || 
-                    (address.substr(0, 4) == "Subo"  && address.length == 98)))
+                    (address.substr(0, 4) == "Subo"  && address.length == 98) ||
+
+                    (address.substr(0, 4) == "Suto"  && address.length == 98) ||
+                    (address.substr(0, 4) == "Susu"  && address.length == 98)))
                 {
                     errors.push("Address is not valid!");
                     $('#send_address').parent().addClass('has-error');

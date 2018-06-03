@@ -18,7 +18,11 @@ APP_NAME = "Sumokoin GUI Wallet"
 VERSION = [0, 0, 4]
 
 
-_data_dir = makeDir(os.path.join(getHomeDir(), 'SumokoinGUIWallet'))
+if "--testnet" in sys.argv[1:]:
+    _data_dir = makeDir(os.path.join(getHomeDir(), 'SumokoinGUIWallet', 'testnet'))
+else:
+    _data_dir = makeDir(os.path.join(getHomeDir(), 'SumokoinGUIWallet'))
+
 DATA_DIR = _data_dir
 
 log_file  = os.path.join(DATA_DIR, 'logs', 'app.log') # default logging file
