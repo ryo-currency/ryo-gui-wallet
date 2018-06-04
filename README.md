@@ -1,17 +1,18 @@
-# Sumokoin GUI Wallet
+# Ryo GUI Wallet
 
-Copyright (c) 2017, Sumokoin.org
+Copyright (c) 2018, ryo-currency.com
+Copyright (c) 2017-2018, Sumokoin.org
 
 **One of the most easy-to-use, intuitive GUI (full) wallets in crypto.**
 
-![](https://www.sumokoin.org/images/sumokoin-gui-wallet-v0.0.1-b2.png)
+![](https://ryo-currency.com/img/png/dark-wallet.png)
 
 
 # Installation & running from source codes
 
 1. Clone the repo:
 		
-		git clone https://github.com/sumoprojects/SumoGUIWallet SumoGUIWallet
+		git clone https://github.com/ryo-currency/ryo-gui-wallet
 
 2. Install dependencies (with Python 2.7):
 
@@ -28,9 +29,9 @@ Copyright (c) 2017, Sumokoin.org
 			sudo apt install python-pyside
 
 
-3. Build/download Sumokoin binaries from [Sumokoin repo](https://github.com/sumoprojects/sumokoin) and put it to `Resources/bin` sub-directory.
+3. Build/download Ryo binaries from [Ryo-currency repo](https://github.com/ryo-currency/ryo-emergency) and put it to `Resources/bin` sub-directory.
 
 4. Run the wallet (Python 2.7):
 		
-		cd /path/to/SumoGUIWallet
+		cd /path/to/RyoGUIWallet
 		python wallet.py

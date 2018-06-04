@@ -13,15 +13,15 @@ import logging
 
 from utils.common import getHomeDir, makeDir
 
-USER_AGENT = "Sumokoin GUI Wallet"
-APP_NAME = "Sumokoin GUI Wallet"
-VERSION = [0, 0, 4]
+USER_AGENT = "Ryo GUI Wallet"
+APP_NAME = "Ryo GUI Wallet"
+VERSION = [0, 1, 0]
 
 
 if "--testnet" in sys.argv[1:]:
-    _data_dir = makeDir(os.path.join(getHomeDir(), 'SumokoinGUIWallet', 'testnet'))
+    _data_dir = makeDir(os.path.join(getHomeDir(), 'RyoGUIWallet', 'testnet'))
 else:
-    _data_dir = makeDir(os.path.join(getHomeDir(), 'SumokoinGUIWallet'))
+    _data_dir = makeDir(os.path.join(getHomeDir(), 'RyoGUIWallet'))
 
 DATA_DIR = _data_dir
 

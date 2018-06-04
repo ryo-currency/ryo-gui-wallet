@@ -64,9 +64,6 @@ log_text_tmpl = """
 </index>
 """
 
-dark_theme_qss = os.path.realpath(
-    os.path.join(os.getcwd(), os.path.dirname(__file__), "dark-theme.qss"))
-
 class LogViewer(QMainWindow):
     def __init__(self, parent, log_file):
         QMainWindow.__init__(self, parent)
@@ -113,7 +110,7 @@ class BaseWebUI(QMainWindow):
         self.view.setZoomFactor(1)
         
         self.setWindowTitle(APP_NAME)
-        self.icon = self._getQIcon('sumokoin_icon_64.png')
+        self.icon = self._getQIcon('ryo_icon_64.png')
         self.setWindowIcon(self.icon)
         
         self.setCentralWidget(self.view)
@@ -188,11 +185,11 @@ class MainWebUI(BaseWebUI):
         
         # Setup the system tray icon
         if sys.platform == 'darwin':
-            tray_icon = 'sumokoin_16x16_mac.png'
+            tray_icon = 'ryo_16x16_mac.png'
         elif sys.platform == "win32":
-            tray_icon = 'sumokoin_16x16.png'
+            tray_icon = 'ryo_16x16.png'
         else:
-            tray_icon = 'sumokoin_32x32_ubuntu.png'
+            tray_icon = 'ryo_32x32_ubuntu.png'
         
         self.trayIcon = QSystemTrayIcon(self._getQIcon(tray_icon))
         self.trayIcon.setToolTip(tray_icon_tooltip)
@@ -251,6 +248,10 @@ class MainWebUI(BaseWebUI):
         self.trayIcon.show()
 
         # Toggle QT dark mode
+        self.resources_path = self.app.property("ResPath")
+        self.dark_theme_qss = os.path.realpath(
+            os.path.join(self.resources_path, "qt", "dark-theme.qss"))
+        
         self.toggleDarkQT()
 
         
@@ -513,7 +514,7 @@ class MainWebUI(BaseWebUI):
         
     def about(self):
         QMessageBox.about(self, "About", \
-            u"%s <br><br>Copyright© 2017 -2018 - Sumokoin Projects (www.sumokoin.org)" % self.agent)
+            u"%s <br><br>Copyright© 2018 Ryo Currency (ryo-currency.com)<br><br>Copyright© 2017 - 2018 Sumokoin Projects (www.sumokoin.org)" % self.agent)
     
     def _load_wallet(self):
         if self.wallet_info.load():
@@ -615,7 +616,7 @@ class MainWebUI(BaseWebUI):
 
     def toggleDarkQT(self):
         if self.app_settings.settings['gui']['dark_mode']:
-            with open(dark_theme_qss,"r") as fh:
+            with open(self.dark_theme_qss,"r") as fh:
                 self.app.setStyleSheet(fh.read())
         else:
             self.app.setStyleSheet("")
