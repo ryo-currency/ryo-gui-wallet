@@ -3,7 +3,7 @@
 ## Copyright (c) 2017, The Sumokoin Project (www.sumokoin.org)
 
 '''
-Process managers for sumokoind, sumo-wallet-cli and sumo-wallet-rpc
+Process managers for ryod, ryo-wallet-cli and ryo-wallet-rpc
 '''
 
 from __future__ import print_function
@@ -33,6 +33,7 @@ class ProcessManager(Thread):
                           creationflags=CREATE_NO_WINDOW)
         self.proc_name = proc_name
         self.daemon = True
+        log(proc_args, LEVEL_INFO, self.proc_name)
         log("[%s] started" % proc_name, LEVEL_INFO, self.proc_name)
     
     def run(self):
@@ -80,10 +81,10 @@ class SumokoindManager(ProcessManager):
         if "--testnet" in sys.argv[1:]:
             testnet_flag = '--testnet'
         else:
-            testnet_flag = ''
+            testnet_flag = '--'
 
-        proc_args = u'%s/bin/sumokoind --log-level %d --block-sync-size %d %s' % (resources_path, log_level, block_sync_size, testnet_flag)
-        ProcessManager.__init__(self, proc_args, "sumokoind")
+        proc_args = u'%s/bin/ryod --log-level %d --block-sync-size %d %s' % (resources_path, log_level, block_sync_size, testnet_flag)
+        ProcessManager.__init__(self, proc_args, "ryod")
         self.synced = Event()
         self.stopped = Event()
         
@@ -112,15 +113,15 @@ class WalletCliManager(ProcessManager):
         if "--testnet" in sys.argv[1:]:
             testnet_flag = '--testnet'
         else:
-            testnet_flag = ''
+            testnet_flag = '--'
 
         if not restore_wallet:
-            wallet_args = u'%s/bin/sumo-wallet-cli --generate-new-wallet=%s --log-file=%s %s' \
+            wallet_args = u'%s/bin/ryo-wallet-cli --generate-new-wallet=%s --log-file=%s %s' \
                                                 % (resources_path, wallet_file_path, wallet_log_path, testnet_flag)
         else:
-            wallet_args = u'%s/bin/sumo-wallet-cli --log-file=%s --restore-deterministic-wallet --restore-height %d %s' \
+            wallet_args = u'%s/bin/ryo-wallet-cli --log-file=%s --restore-deterministic-wallet --restore-height %d %s' \
                                                 % (resources_path, wallet_log_path, restore_height, testnet_flag)
-        ProcessManager.__init__(self, wallet_args, "sumo-wallet-cli")
+        ProcessManager.__init__(self, wallet_args, "ryo-wallet-cli")
         self.ready = Event()
         self.last_error = ""
         self.block_height = 0
@@ -167,19 +168,19 @@ class WalletCliManager(ProcessManager):
 class WalletRPCManager(ProcessManager):
     def __init__(self, resources_path, wallet_file_path, wallet_password, app, log_level=1):
         self.user_agent = str(uuid4().hex)
-        wallet_log_path = os.path.join(os.path.dirname(wallet_file_path), "sumo-wallet-rpc.log")
+        wallet_log_path = os.path.join(os.path.dirname(wallet_file_path), "ryo-wallet-rpc.log")
 
         if "--testnet" in sys.argv[1:]:
             testnet_flag = '--testnet'
             rpc_bind_port = 29736
         else:
-            testnet_flag = ''
-            rpc_bind_port = 9736
+            testnet_flag = '--'
+            rpc_bind_port = 19736
             
-        wallet_rpc_args = u'%s/bin/sumo-wallet-rpc --wallet-file %s --log-file %s --rpc-bind-port %d --user-agent %s --log-level %d %s' \
+        wallet_rpc_args = u'%s/bin/ryo-wallet-rpc --wallet-file %s --log-file %s --rpc-bind-port %d --user-agent %s --log-level %d %s' \
                                             % (resources_path, wallet_file_path, wallet_log_path, rpc_bind_port, self.user_agent, log_level, testnet_flag)
 
-        ProcessManager.__init__(self, wallet_rpc_args, "sumo-wallet-rpc")
+        ProcessManager.__init__(self, wallet_rpc_args, "ryo-wallet-rpc")
         sleep(0.2)
         self.send_command(wallet_password)
         
