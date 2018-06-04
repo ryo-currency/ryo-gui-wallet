@@ -1,6 +1,5 @@
 psutil==5.4.5
 requests==2.18.4
 Growl==0.7.1
-PySide==1.2.4
 pynotify==0.1.1
 winpaths
