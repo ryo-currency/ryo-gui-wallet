@@ -328,8 +328,16 @@ class MainWebUI(BaseWebUI):
     def _update_daemon_status(self):
         target_height = 0
         sumokoind_info = self.daemon_rpc_request.get_info()
+
+        if self.wallet_rpc_manager is not None and self.wallet_rpc_manager.is_ready():
+            walletrpc_info = self.wallet_rpc_manager.rpc_request.getheight()
+            wallet_height = walletrpc_info['height']
+        else:
+            wallet_height = 0
+            
         if sumokoind_info['status'] == "OK":
             status = "Connected"
+            is_ready = sumokoind_info['is_ready']
             self.current_height = int(sumokoind_info['height'])
             target_height = int(sumokoind_info['target_height'])
             if target_height == 0 or target_height < self.current_height:
@@ -338,10 +346,13 @@ class MainWebUI(BaseWebUI):
                 self.target_height = target_height;
         else:
             status = sumokoind_info['status']
+            is_ready = False
         
         info = {"status": status, 
                 "current_height": self.current_height, 
                 "target_height": self.target_height,
+                "wallet_height": wallet_height,
+                "is_ready": is_ready
             }
         
         self.hub.update_daemon_status(json.dumps(info))

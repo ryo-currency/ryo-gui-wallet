@@ -135,6 +135,11 @@ class WalletRPCRequest():
         req.start()
         return req.get_result()
         
+    def getheight(self):
+        rpc_input = {"method":"getheight"}
+        res = self.send_request(rpc_input)
+        return res
+        
     def query_key(self, key_type="mnemonic"):
         rpc_input = {"method":"query_key", "params": {"key_type": key_type}}
         res = self.send_request(rpc_input)
