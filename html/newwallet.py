@@ -89,7 +89,7 @@ html ="""
                 var html = height;
                 if(target_height > 0 && target_height > height){
                     sync_pct = target_height > 0 ? (height*100.0/target_height).toFixed(1) : 0;
-                    html = height + "/" + target_height + " (" + sync_pct + "%)";
+                    html = height + " (" + sync_pct + "%)";
                 }
                 $('#processed_block_height').html(html);
             }

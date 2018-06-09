@@ -532,19 +532,31 @@ class MainWebUI(BaseWebUI):
             wallet_password = None
             self.show()
             while True:
+#                if self.wallet_info.wallet_password is None:
+#                    wallet_password = ''
+#                    break;
+                
                 wallet_password, result = self.hub._custom_input_dialog(self, \
                             "Wallet Password", "Enter wallet password:", \
                             QLineEdit.Password)
+
                 if not result:
                     wallet_password = None
-                    break
                 elif not wallet_password:
-                    QMessageBox.warning(self, "Wallet Password", \
-                                        "Password is required to open wallet!")
-                else:
-                    break
+                    wallet_password = ''
+
+                break
+            
+#                if not result:
+#                    wallet_password = None
+#                    break
+#                elif not wallet_password:
+#                    QMessageBox.warning(self, "Wallet Password", \
+#                                        "Password is required to open wallet!")
+#                else:
+#                    break
                 
-            if not wallet_password:
+            if wallet_password is None:
                 result = QMessageBox.question(self, "Create/Restore Wallet?", \
                             "Do you want to create (or restore to) a new wallet instead?", \
                             QMessageBox.Yes | QMessageBox.No, defaultButton=QMessageBox.No)
@@ -564,8 +576,12 @@ class MainWebUI(BaseWebUI):
                             "Error: Wallet password is incorrect!<br><br>Please retry...")
                         self._load_wallet()
                         return
-                
-                self.wallet_info.wallet_password = hashlib.sha256(wallet_password).hexdigest()
+
+                if wallet_password == '':
+                    self.wallet_info.wallet_password = None
+                else:
+                    self.wallet_info.wallet_password = hashlib.sha256(wallet_password).hexdigest()
+                    
                 self.update_wallet_info()
                 if not hasattr(self, "timer2"):
                     self.timer2 = QTimer(self)

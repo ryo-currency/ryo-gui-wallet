@@ -116,6 +116,7 @@ h3{
     left: 0;
     right: 0;
     bottom: 0;
+    margin-bottom: 10px;
 }
 
 #progress_bar_text_high{

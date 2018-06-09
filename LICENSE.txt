@@ -1,4 +1,5 @@
-Copyright (c) 2017, The Sumokoin Project (www.sumokoin.org)
+Copyright (c) 2018 Ryo Currency (ryo-currency.com)
+Copyright (c) 2017-2018 The Sumokoin Project (www.sumokoin.org)
 
 All rights reserved.
 
@@ -29,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------
 Parts of binaries included:
-+ Copyright (c) 2014-2017, The Monero Project
++ Copyright (c) 2014-2018, The Monero Project
 + Copyright (c) 2012-2013, The Cryptonote developers
 ------------------------------------------------------------------------------
 + PySide is licensed under the LGPL version 2.1 license

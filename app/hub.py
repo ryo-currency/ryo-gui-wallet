@@ -25,6 +25,7 @@ from utils.common import print_money, print_money2, readFile
                                     
 from settings import APP_NAME, VERSION, DATA_DIR, COIN, makeDir, seed_languages
 from utils.logger import log, LEVEL_ERROR, LEVEL_INFO
+from utils.blockchain import pop_blocks
 
 # from utils.notify import Notify
 # from sys import stderr
@@ -36,7 +37,7 @@ from manager.ProcessManager import WalletCliManager
 wallet_dir_path = os.path.join(DATA_DIR, 'wallets')
 makeDir(wallet_dir_path)
         
-password_regex = re.compile(r"^([a-zA-Z0-9!@#\$%\^&\*]{1,256})$")
+#password_regex = re.compile(r"^([a-zA-Z0-9_\-!@#\$%\^&\*]{0,256})$")
 
 from webui import LogViewer
 
@@ -95,7 +96,7 @@ class Hub(QObject):
             wallet_password, result = self._custom_input_dialog(self.new_wallet_ui, \
                 "Wallet Password", "Enter password of the imported wallet:", QLineEdit.Password)
             if result:
-                if not wallet_password:
+                if wallet_password is None:
                     QMessageBox.warning(self.new_wallet_ui, \
                             'Wallet Password',\
                              "You must provide password to open the imported wallet")
@@ -181,11 +182,10 @@ class Hub(QObject):
                 wallet_password, result = self._custom_input_dialog(self.new_wallet_ui, \
                         "Wallet Password", "Set wallet password:", QLineEdit.Password)
                 if result:
-                    if not password_regex.match(wallet_password):
+                    if not all(ord(char) < 128 for char in wallet_password):
                         QMessageBox.warning(self.new_wallet_ui, \
                             'Wallet Password',\
-                             "Password must contain at least 1 character [a-zA-Z] or number [0-9]\
-                                        <br>or special character like !@#$%^&* and not contain spaces")
+                                        "Password must contain only ASCII characters")
                         continue
                     
                     confirm_password, result = self._custom_input_dialog(self.new_wallet_ui, \
@@ -377,15 +377,19 @@ class Hub(QObject):
             if result == QMessageBox.No:
                 self.on_wallet_send_tx_completed_event.emit('{"status": "CANCELLED", "message": "Sending coin cancelled"}')
                 return
-            
-        wallet_password, result = self._custom_input_dialog(self.ui, \
+
+        if self.ui.wallet_info.wallet_password:
+            wallet_password, result = self._custom_input_dialog(self.ui, \
                         "Wallet Password", "Please enter wallet password:", QLineEdit.Password)
+        else:
+            wallet_password = ''
+            result = True
         
         if not result:
             self.on_wallet_send_tx_completed_event.emit('{"status": "CANCELLED", "message": "Wrong wallet password"}');
             return
         
-        if hashlib.sha256(wallet_password).hexdigest() != self.ui.wallet_info.wallet_password:
+        if self.ui.wallet_info.wallet_password and hashlib.sha256(wallet_password).hexdigest() != self.ui.wallet_info.wallet_password:
             self.on_wallet_send_tx_completed_event.emit('{"status": "CANCELLED", "message": "Wrong wallet password"}');
             QMessageBox.warning(self.ui, "Incorrect Wallet Password", "Wallet password is not correct!")
             return
@@ -579,12 +583,17 @@ class Hub(QObject):
         if result == QMessageBox.No:
             return
         
-        wallet_password, result = self._custom_input_dialog(self.ui, \
+        if self.ui.wallet_info.wallet_password:
+            wallet_password, result = self._custom_input_dialog(self.ui, \
                         "Wallet Password", "Please enter wallet password:", QLineEdit.Password)
+        else:
+            wallet_password = ''
+            result = True
+
         if not result:
             return
         
-        if hashlib.sha256(wallet_password).hexdigest() != self.ui.wallet_info.wallet_password:
+        if self.ui.wallet_info.wallet_password and hashlib.sha256(wallet_password).hexdigest() != self.ui.wallet_info.wallet_password:
             QMessageBox.warning(self.ui, "Incorrect Wallet Password", "Wallet password is not correct!")
             return
         
@@ -593,13 +602,18 @@ class Hub(QObject):
     
     @Slot(str)
     def view_wallet_key(self, key_type):
-        wallet_password, result = self._custom_input_dialog(self.ui, \
+        if self.ui.wallet_info.wallet_password:
+            wallet_password, result = self._custom_input_dialog(self.ui, \
                         "Wallet Password", "Please enter wallet password:", QLineEdit.Password)
+        else:
+            wallet_password = ''
+            result = True
+
         if not result:
             self.on_view_wallet_key_completed_event.emit("", "");
             return
         
-        if hashlib.sha256(wallet_password).hexdigest() != self.ui.wallet_info.wallet_password:
+        if self.ui.wallet_info.wallet_password and hashlib.sha256(wallet_password).hexdigest() != self.ui.wallet_info.wallet_password:
             self.on_view_wallet_key_completed_event.emit("", "");
             QMessageBox.warning(self.ui, "Incorrect Wallet Password", "Wallet password is not correct!")
             return
@@ -651,6 +665,30 @@ class Hub(QObject):
         self.ui.start_deamon()
         self.app_process_events(5)
         self.on_restart_daemon_completed_event.emit()
+        
+    @Slot()
+    def pop_blocks(self):
+        while True:
+            no_blocks, result = self._custom_input_dialog(self.ui, \
+                                "Pop Blocks", "Enter number of blocks to pop:",
+                                QLineEdit.Normal, QInputDialog.TextInput, "1000")
+            if result:
+                if not no_blocks.isdigit():
+                    QMessageBox.warning(self.ui, \
+                            "Pop Blocks",\
+                            "Value must contain numbers only")
+                else:
+                    break
+            else:
+                self.on_pop_blocks_completed_event.emit()
+                return False
+
+        self.app_process_events(1)
+        self.ui.sumokoind_daemon_manager.stop()
+        pop_blocks(no_blocks)
+        self.ui.start_deamon()
+        self.app_process_events(5)
+        self.on_pop_blocks_completed_event.emit()
         
     
     @Slot()
@@ -708,14 +746,16 @@ class Hub(QObject):
     
     def _custom_input_dialog(self, ui, title, label, 
                              text_echo_mode=QLineEdit.Normal, 
-                             input_mode=QInputDialog.TextInput):
-        dlg = QInputDialog(ui)                 
+                             input_mode=QInputDialog.TextInput,
+                             default_value=''):
+        dlg = QInputDialog(ui)
         dlg.setTextEchoMode(text_echo_mode)
         dlg.setInputMode(input_mode)
         dlg.setWindowTitle(title)
-        dlg.setLabelText(label)                        
-        dlg.resize(250, 100)                
-        result = dlg.exec_()                             
+        dlg.setTextValue(default_value)
+        dlg.setLabelText(label)
+        dlg.resize(250, 100)
+        result = dlg.exec_()
         text = dlg.textValue()
         return (text, result)
     
@@ -759,6 +799,7 @@ class Hub(QObject):
     on_load_app_settings_completed_event = Signal(str)
     on_quick_load_ui_settings_completed_event = Signal(str)
     on_restart_daemon_completed_event = Signal()
+    on_pop_blocks_completed_event = Signal()
     on_paste_seed_words_event = Signal(str)
     on_update_wallet_loading_height_event = Signal(int, int)
     

@@ -11,7 +11,7 @@ from PySide import QtCore
 from PySide.QtGui import QMessageBox
 
 from app.QSingleApplication import QSingleApplication
-from utils.common import DummyStream, getAppPath, readFile
+from utils.common import DummyStream, getAppPath, getResourcesPath, readFile
 from settings import APP_NAME
 
 from app.hub import Hub
@@ -23,8 +23,9 @@ file_hashes = [
         ('www/scripts/mustache.min.js', '3258bb61f5b69f33076dd0c91e13ddd2c7fe771882adff9345e90d4ab7c32426'),
         ('www/scripts/jquery.qrcode.min.js', 'f4ccf02b69092819ac24575c717a080c3b6c6d6161f1b8d82bf0bb523075032d'),
         ('www/scripts/utils.js', 'd0c6870ed19c92cd123c7443cb202c7629f9cd6807daed698485fda25214bdb4'),
+        ('www/scripts/main.js', '1e25e5c50a8104cc2c5dcd74aff93ff7e3ddab592caffe639b19566e7c9835c5'),
 
-        ('www/css/structure.css', 'f12c21c50150c652202366801a74443d412caf87210103860f4257ede988f99a'),
+        ('www/css/structure.css', '2272e39fb9a078a13985e3fcacec9ca725e4d77467197b55a0cca0219cadef81'),
         ('www/css/light-theme.css', '58ad4961791523bc259c4794ece88af47170db31eb00cc5f65e2a5289410b226'),
         ('www/css/dark-theme.css', 'bae55461985c063e252135ba85495c9a16a8cf75e4b0a74a341d16923a8c69b7'),
     
@@ -63,10 +64,7 @@ def main():
               
     # Get application path
     app_path = getAppPath()
-    if sys.platform == 'darwin' and hasattr(sys, 'frozen'):
-        resources_path = os.path.normpath(os.path.abspath(os.path.join(app_path, "..", "Resources")))
-    else:
-        resources_path = os.path.normpath(os.path.abspath(os.path.join(app_path, "Resources")))
+    resources_path = getResourcesPath()
         
     # Application setup
     

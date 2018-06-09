@@ -36,6 +36,13 @@ def getAppPath():
         dir_path = os.getcwdu()
     return dir_path
 
+def getResourcesPath():
+    app_path = getAppPath()
+    if sys.platform == 'darwin' and hasattr(sys, 'frozen'):
+        resources_path = os.path.normpath(os.path.abspath(os.path.join(app_path, "..", "Resources")))
+    else:
+        resources_path = os.path.normpath(os.path.abspath(os.path.join(app_path, "Resources")))
+    return resources_path
     
 def getHomeDir():
     if sys.platform == 'win32':
