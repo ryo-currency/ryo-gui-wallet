@@ -23,15 +23,15 @@ file_hashes = [
         ('www/scripts/mustache.min.js', '3258bb61f5b69f33076dd0c91e13ddd2c7fe771882adff9345e90d4ab7c32426'),
         ('www/scripts/jquery.qrcode.min.js', 'f4ccf02b69092819ac24575c717a080c3b6c6d6161f1b8d82bf0bb523075032d'),
         ('www/scripts/utils.js', 'd0c6870ed19c92cd123c7443cb202c7629f9cd6807daed698485fda25214bdb4'),
-        ('www/scripts/main.js', '1e25e5c50a8104cc2c5dcd74aff93ff7e3ddab592caffe639b19566e7c9835c5'),
+    #('www/scripts/main.js', '1e25e5c50a8104cc2c5dcd74aff93ff7e3ddab592caffe639b19566e7c9835c5'),
 
         ('www/css/structure.css', '2272e39fb9a078a13985e3fcacec9ca725e4d77467197b55a0cca0219cadef81'),
         ('www/css/light-theme.css', '58ad4961791523bc259c4794ece88af47170db31eb00cc5f65e2a5289410b226'),
         ('www/css/dark-theme.css', 'bae55461985c063e252135ba85495c9a16a8cf75e4b0a74a341d16923a8c69b7'),
-    
+
         ('www/css/bootstrap.min.css', '9d517cad6f1744ab5eba382ccf0f53969f7d326e1336a6c2771e82830bc2c5ac'),
         ('www/css/font-awesome.min.css', 'b8b02026a298258ce5069d7b6723c2034058d99220b6612b54bc0c5bf774dcfb'),
-        
+
         ('www/css/fonts/fontawesome-webfont.ttf', '7b5a4320fba0d4c8f79327645b4b9cc875a2ec617a557e849b813918eb733499'),
         ('www/css/fonts/glyphicons-halflings-regular.ttf', 'e395044093757d82afcb138957d06a1ea9361bdcf0b442d06a18a8051af57456'),
         ('www/css/fonts/RoboReg.ttf', 'dc66a0e6527b9e41f390f157a30f96caed33c68d5db0efc6864b4f06d3a41a50'),
@@ -48,7 +48,7 @@ def _check_file_integrity(app):
 #         print( file_path, hashlib.sha256(data).hexdigest() )
         if hashlib.sha256(data).hexdigest() != file_hash:
             return False
-        
+
     return True
 
 
@@ -61,13 +61,13 @@ def main():
         sys.__stdout__ = DummyStream()
         sys.__stderr__ = DummyStream()
         sys.__stdin__ = DummyStream()
-              
+
     # Get application path
     app_path = getAppPath()
     resources_path = getResourcesPath()
-        
+
     # Application setup
-    
+
     app = QSingleApplication(sys.argv)
     app.setOrganizationName('Ryo')
     app.setOrganizationDomain('ryo-currency.com')
@@ -76,7 +76,7 @@ def main():
     app.setProperty("ResPath", resources_path)
     if sys.platform == 'darwin':
         app.setAttribute(QtCore.Qt.AA_DontShowIconsInMenus)
-        
+
     if not _check_file_integrity(app):
         QMessageBox.critical(None, "Application Fatal Error", """<b>File integrity check failed!</b>
                 <br><br>This could be a result of unknown (maybe, malicious) action<br> to wallet code files.""")
@@ -86,5 +86,5 @@ def main():
         ui = MainWebUI(app=app, hub=hub, debug=False)
         hub.setUI(ui)
         app.singleStart(ui)
-        
+
         sys.exit(app.exec_())
