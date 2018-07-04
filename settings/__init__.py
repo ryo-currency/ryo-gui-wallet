@@ -15,7 +15,7 @@ from utils.common import getHomeDir, makeDir
 
 USER_AGENT = "Ryo GUI Wallet"
 APP_NAME = "Ryo GUI Wallet"
-VERSION = [0, 1, 2]
+VERSION = [0, 2, 1]
 
 
 if "--testnet" in sys.argv[1:]:
