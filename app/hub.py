@@ -252,15 +252,14 @@ class Hub(QObject):
                     self.wallet_cli_manager.send_command(wallet_filepath)
                     #self.app_process_events(0.5)
                     #self.wallet_cli_manager.send_command("Y")
-                    self.app_process_events(0.5)
+                    self.app_process_events(1)
                     self.wallet_cli_manager.send_command(mnemonic_seed)
-                    if restore_height == 0:
-                        self.app_process_events(0.5)
-                        self.wallet_cli_manager.send_command("0")
-                    self.app_process_events(0.5)
+                    self.app_process_events(1)
                     self.wallet_cli_manager.send_command(wallet_password)
-                    self.app_process_events(0.5)
+                    self.app_process_events(1)
                     self.wallet_cli_manager.send_command(wallet_password)
+                    #self.app_process_events(1)
+                    #self.wallet_cli_manager.send_command(str(restore_height))
                 counter = 0
                 while not self.wallet_cli_manager.is_ready():
                     self.app_process_events(1)

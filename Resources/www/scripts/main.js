@@ -403,7 +403,7 @@ function update_wallet_info(wallet_info_json){
             }
         }
 
-        disable_buttons(is_ready);
+        disable_buttons(!is_ready);
 
         if(current_balance != wallet_info['balance']){
             balance_span.delay(100).fadeOut(function(){

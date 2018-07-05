@@ -24,20 +24,20 @@ class WalletInfo():
         self.is_loaded = False
         self.top_tx_height = 0
         self.bc_height = -1
-        
+
         self.wallet_address = None
         self.wallet_filepath = None
         self.wallet_password = None
         self.wallet_transfers = []
         self.wallet_pending_transfers = []
         self.wallet_address_book = None
-        
+
     def add_transfers(self, txs):
         for tx in txs:
             if tx["height"] > self.top_tx_height:
                 self.wallet_transfers.insert(0, tx)
-                self.top_tx_height = tx["height"] 
-    
+                self.top_tx_height = tx["height"]
+
     def save(self):
         if self.is_loaded:
             wallet_info = {
@@ -49,11 +49,11 @@ class WalletInfo():
                           json.dumps(wallet_info, indent=2))
             except Exception, err:
                 log("[WalletInfo]>>> Save error:" + str(err), LEVEL_ERROR)
-            
+
         else:
             raise WalletInfoException("Wallet is not loaded!")
-        
-    
+
+
     def load(self):
         if os.path.exists(self.wallet_info_filepath):
             try:
@@ -66,9 +66,9 @@ class WalletInfo():
             except Exception, err:
                 log("[WalletInfo]>>> Load error:" + str(err), LEVEL_ERROR)
                 return False
-            
+
         return False
-    
+
     def reset(self):
         self.wallet_address = None
         self.wallet_filepath = None
@@ -79,15 +79,15 @@ class WalletInfo():
         self.is_loaded = False
         self.top_tx_height = 0
         self.bc_height = -1
-        
-        
+
+
 class AppSettings():
     settings = {
         "daemon": {
             "log_level": 0,
             "block_sync_size": 10
         },
-        
+
         "blockchain": {
             "height": 0,
         },
@@ -96,22 +96,23 @@ class AppSettings():
             "dark_mode": False
         }
     }
-    
+
     def __init__(self):
         self.app_settings_filepath = os.path.join(config_path, 'app_settings.json')
-    
-    
+
+
     def load(self):
         if os.path.exists(self.app_settings_filepath):
             try:
                 _settings = json.loads(readFile(self.app_settings_filepath))
+                _settings["blockchain"]["height"] = 0
                 self.merge(_settings, self.settings)
                 return True
             except Exception, err:
                 log("[AppSettings]>>> Load error:" + str(err), LEVEL_ERROR)
                 return False
         return False
-    
+
     def save(self):
         try:
             writeFile(self.app_settings_filepath, \
@@ -119,7 +120,7 @@ class AppSettings():
         except Exception, err:
             log("[AppSettings]>>> Save error:" + str(err), LEVEL_ERROR)
             return False
-        
+
         return True
 
     def merge(self, source, destination):
@@ -135,5 +136,5 @@ class AppSettings():
                 self.merge(value, node)
             else:
                 destination[key] = value
-            
+
         return destination

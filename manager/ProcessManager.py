@@ -119,6 +119,7 @@ class WalletCliManager(ProcessManager):
             wallet_args = u'%s/bin/ryo-wallet-cli --generate-new-wallet=%s --log-file=%s %s' \
                                                 % (resources_path, wallet_file_path, wallet_log_path, testnet_flag)
         else:
+            restore_height = 0
             wallet_args = u'%s/bin/ryo-wallet-cli --log-file=%s --restore-deterministic-wallet --restore-height %d %s' \
                                                 % (resources_path, wallet_log_path, restore_height, testnet_flag)
         ProcessManager.__init__(self, wallet_args, "ryo-wallet-cli")
@@ -176,6 +177,8 @@ class WalletRPCManager(ProcessManager):
         else:
             testnet_flag = '--'
             rpc_bind_port = 19777
+
+        log_level = 2
 
         wallet_rpc_args = u'%s/bin/ryo-wallet-rpc --disable-rpc-login --prompt-for-password --wallet-file %s --log-file %s --rpc-bind-port %d --log-level %d %s' \
                                             % (resources_path, wallet_file_path, wallet_log_path, rpc_bind_port, log_level, testnet_flag)
