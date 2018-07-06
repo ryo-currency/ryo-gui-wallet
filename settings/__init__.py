@@ -15,7 +15,7 @@ from utils.common import getHomeDir, makeDir
 
 USER_AGENT = "Ryo GUI Wallet"
 APP_NAME = "Ryo GUI Wallet"
-VERSION = [0, 1, 2]
+VERSION = [0, 2, 0, 1]
 
 
 if "--testnet" in sys.argv[1:]:
@@ -28,14 +28,20 @@ DATA_DIR = _data_dir
 log_file  = os.path.join(DATA_DIR, 'logs', 'app.log') # default logging file
 log_level = logging.DEBUG # logging level
 
-seed_languages = [("0", "English"), 
-                  ("1", "Spanish"), 
-                  ("2", "German"), 
-                  ("3", "Italian"), 
-                  ("4", "Portuguese"),
-                  ("5", "Russian"),
-                  ("6", "Japanese"),
-                ]
+seed_languages = [
+    ("0", "German"),
+    ("1", "English"),
+    ("2", "Spanish"),
+    ("3", "French"),
+    ("4", "Italian"),
+    ("5", "Dutch"),
+    ("6", "Portuguese"),
+    ("7", "Russian"),
+    ("8", "Japanese"),
+    ("9", "Chinese (simplified)"),
+    ("10", "Esperanto"),
+    ("11", "Lojban"),
+]
 
 # COIN - number of smallest units in one coin
 COIN = 1000000000.0

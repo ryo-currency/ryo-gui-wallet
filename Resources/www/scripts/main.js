@@ -1,7 +1,7 @@
 function app_ready(){
 
     $(document).ready(function(){
-        /* 
+        /*
          * To not make the UI show light when preference is set to dark mode, we are going
          * to load the app settings without a timeout. Because the 2000ms delay is there
          * for a reason, we will also re-apply any settings in the below callback as well
@@ -28,13 +28,13 @@ function app_ready(){
             $('body').addClass('dark-theme');
         }
     });
-    
+
     app_hub.on_main_wallet_ui_reset_event.connect(function(){
         setTimeout(function(){
             location.reload();
         }, 5000);
     });
-    
+
     app_hub.on_daemon_update_status_event.connect(update_daemon_status);
     app_hub.on_wallet_update_info_event.connect(update_wallet_info);
     app_hub.on_wallet_rescan_spent_completed_event.connect(function(){
@@ -42,13 +42,13 @@ function app_ready(){
         rescan_bc_btn.disable(false);
         hide_progress();
     });
-    
+
     app_hub.on_wallet_rescan_bc_completed_event.connect(function(){
         rescan_spent_btn.disable(false);
         rescan_bc_btn.disable(false);
         hide_progress();
     });
-    
+
     app_hub.on_wallet_send_tx_completed_event.connect(function(status_json){
         var status = $.parseJSON(status_json);
         if(status['status'] == "OK"){
@@ -65,11 +65,11 @@ function app_ready(){
                 $('#send_amount').parent().addClass('has-error');
             }
         }
-        
+
         btn_send_tx.disable(false);
         hide_progress();
     });
-    
+
     app_hub.on_generate_payment_id_event.connect(function(payment_id, integrated_address){
         $('#receive_payment_id').val(payment_id);
         receive_integrated_address.val(integrated_address);
@@ -78,13 +78,13 @@ function app_ready(){
         $('#btn_copy_integrated_address').disable(false);
         hide_progress();
     });
-    
+
     app_hub.on_load_address_book_completed_event.connect(function(address_book){
         address_book = $.parseJSON(address_book);
         hide_progress();
         var html = "Address book empty!";
         if(address_book.length > 0){
-            html = '<div id="address-book-box" class="table-responsive">'; 
+            html = '<div id="address-book-box" class="table-responsive">';
             html += '<table class="table table-condensed" style="table-layout:fixed;"><thead><tr><th style="border:none">Address</th><th style="border:none;min-width:120px;width:15%;">Payment ID</th><th style="border:none;min-width:120px;width:20%">Description</th><th style="border:none;width:110px;">&nbsp;</th></tr></thead><tbody>';
             var row_tmpl = $('#address_book_row_templ').html();
             for(var i=0; i<address_book.length; i++){
@@ -97,13 +97,13 @@ function app_ready(){
                 if(payment_id == "0000000000000000"){
                     payment_id = "";
                 }
-                
+
                 var payment_id_short = payment_id.length > 16 ? payment_id.substring(0,18) + '...' : payment_id;
                 var address_short = address.substring(0,18) + '...';
                 var desc_short = entry['description'].length > 50 ? entry['description'].substring(0, 50) + '...' : entry['description'];
-                
-                var row_html = Mustache.render(row_tmpl, 
-                                               {   
+
+                var row_html = Mustache.render(row_tmpl,
+                                               {
                                                    'address': address,
                                                    'payment_id': payment_id,
                                                    'address_short': address_short,
@@ -111,14 +111,14 @@ function app_ready(){
                                                    'desc_short': desc_short,
                                                    'index': entry['index']
                                                });
-                
+
                 html += row_html;
             }
             html += "</tbody></table></div>";
         }
-        
+
         show_app_dialog(html);
-        
+
         $(".address-book-row").click(function() {
             $("#send_address").val( $(this).data("address") );
             $("#send_payment_id").val( $(this).data("payment-id") );
@@ -126,20 +126,20 @@ function app_ready(){
             return false;
         });
     });
-    
+
     app_hub.on_tx_detail_found_event.connect(function(tx_detail_json){
         var tx = $.parseJSON(tx_detail_json);
         if(tx['status'] == "ERROR"){
             hide_progress();
             return;
         }
-        
+
         var tx_status_text = tx['status'] == "in" || tx['status'] == "out" ? "Completed" :  (tx['status'] == "pending" ? "Pending" : "In Pool");
         if(tx['confirmation'] < 10){
             if(tx_status_text == "Completed") tx_status_text = "Locked";
-            tx_status_text += " (+" + tx['confirmation'] + " confirms)";                
+            tx_status_text += " (+" + tx['confirmation'] + " confirms)";
         }
-        
+
         var dest_html = "";
         if(tx.hasOwnProperty('destinations')){
             var destinations = tx['destinations'];
@@ -147,16 +147,16 @@ function app_ready(){
                 dest_html += '<li>Amount: <span class="tx-list tx-amount tx-' + tx['status'] + '">' + printMoney(destinations[i]['amount']/1000000000) + "</span>Address: <strong>" + destinations[i]['address'] + "</strong></li>";
             }
         }
-        
-        
+
+
         var tx_row_tmpl = $('#tx_detail_templ').html();
-        var tx_rendered = Mustache.render(tx_row_tmpl, 
+        var tx_rendered = Mustache.render(tx_row_tmpl,
                                           {   'cls_in_out': tx['status'],
                                               'tx_direction': tx['direction'] == "in" ? "Incoming Tx:" : "Outgoing Tx:",
                                               'tx_status': tx_status_text,
                                               'tx_fa_icon': tx['direction'] == "in" ? "mail-forward" : "reply",
                                               'tx_id': tx['txid'],
-                                              'tx_payment_id': tx['payment_id'], 
+                                              'tx_payment_id': tx['payment_id'],
                                               'tx_amount': printMoney(tx['amount']/1000000000.),
                                               'tx_fee': printMoney(tx['fee']/1000000000.),
                                               'tx_fee_hide': tx['fee'] > 0 ? '' : 'tx-fee-hide',
@@ -171,11 +171,11 @@ function app_ready(){
                                               'tx_destinations' : dest_html,
                                               'tx_destinations_hide': tx.hasOwnProperty('destinations') ? "" : "tx-destinations-hide"
                                           });
-        
+
         hide_progress();
         show_app_dialog('<div class="copied">' + tx_rendered + '</div>');
     });
-    
+
     app_hub.on_load_tx_history_completed_event.connect(function(ret_json){
         var ret = $.parseJSON(ret_json);
         var txs = ret["txs"];
@@ -183,7 +183,7 @@ function app_ready(){
         var num_of_pages = ret["num_of_pages"];
         var start_page = ret["start_page"];
         var end_page = ret["end_page"];
-        
+
         var tx_history_row_tmpl = $('#tx_history_row').html();
         var table_tx_history_body = $('#table_tx_history tbody');
         table_tx_history_body.html("");
@@ -200,16 +200,16 @@ function app_ready(){
                 'tx_height': tx['height'],
                 'cls_in_out': tx['status']
             });
-            
+
             table_tx_history_body.append(row);
         }
-        
+
         if(num_of_pages > 1){
             var page_html = "";
             for(var i=start_page; i<=end_page; i++){
                 page_html += '<li class="' + (i == current_page ? 'active' : '') + '"><a href="javascript:load_tx_history(' + i + ')">' + i + '</a></li>';
             }
-            
+
             var tx_history_page_tmpl = $('#tx_history_page_tmpl').html();
             var tx_history_page_html =  Mustache.render(tx_history_page_tmpl, {
                 'page_prev_disabled': current_page == 1? 'disabled': '',
@@ -218,14 +218,14 @@ function app_ready(){
                 'next_page': current_page < num_of_pages ? current_page + 1 : current_page,
                 'page_html': page_html
             });
-            
+
             $('#tx_history_pages').html('');
             $('#tx_history_pages').append(tx_history_page_html);
         }
-        
+
         current_tx_history_page = current_page;
     });
-    
+
     app_hub.on_view_wallet_key_completed_event.connect(function(title, ret){
         if(ret){
             var html = '<h5>' + title + '</h5>';
@@ -235,19 +235,19 @@ function app_ready(){
             show_app_dialog(html);
         }
     });
-    
+
     app_hub.on_restart_daemon_completed_event.connect(function(){
         hide_progress();
     });
-    
+
     app_hub.on_pop_blocks_completed_event.connect(function(){
         hide_app_progress();
     });
-    
+
     setInterval(function(){
         app_hub.update_wallet_loading_height();
     }, 1000);
-    
+
     app_hub.on_update_wallet_loading_height_event.connect(function(height, target_height){
         //console.log(height);
         if(height < target_height){
@@ -277,13 +277,16 @@ function update_daemon_status(status_json){
         var daemon_status = status['status'];
         var current_height = status['current_height'];
         var wallet_height = status['wallet_height']
-        is_ready = status['is_ready'] && current_height >= 137510 && wallet_height >= current_height -1;
-
+        var target_height = status['target_height'];
+        sync_pct = target_height > 0 ? parseInt(current_height*100/target_height) : 0;
+        //is_ready = status['is_ready'] && current_height >= 137510 && wallet_height >= current_height -1;
+        is_ready = sync_pct == 100;
         var status_text = "Network: " + daemon_status;
         if(daemon_status == "Connected"){
             if(is_ready){
                 status_text = '<i class="fa fa-rss fa-flip-horizontal"></i>&nbsp;&nbsp;Network synchronized';
-                status_text += " (Height: " + current_height + ")";
+                //status_text += " (Height: " + current_height + ")";
+                status_text += " " + current_height + "/" + target_height + " (<strong>" + sync_pct + "%</strong>)";
                 progress_bar.addClass('progress-bar-success')
                     .removeClass('progress-bar-striped')
                     .removeClass('active')
@@ -293,7 +296,8 @@ function update_daemon_status(status_json){
             }
             else {
                 status_text = '<i class="fa fa-refresh"></i>&nbsp;&nbsp;Synchronizing...';
-                status_text += " (Height: " + current_height + ")";
+                //status_text += " (Height: " + current_height + ")";
+                status_text += " " + current_height + "/" + target_height + " (<strong>" + sync_pct + "%</strong>)";
                 progress_bar.addClass('progress-bar-striped')
                     .addClass('active')
                     .addClass('progress-bar-warning')
@@ -301,12 +305,44 @@ function update_daemon_status(status_json){
                     .removeClass('progress-bar-danger');
                 disable_buttons(true);
             }
+            /*
             progress_bar.css("width", "100%");
             progress_bar.attr("aria-valuenow", 100);
             progress_bar_text_low.html('');
             progress_bar_text_high.html(status_text);
             progress_bar_text_low.hide();
             progress_bar_text_high.show();
+            */
+            progress_bar_text_low.html(status_text);
+            progress_bar_text_high.html(status_text);
+
+            if(sync_pct < 100){
+                progress_bar.addClass('progress-bar-striped')
+                    .addClass('active');
+            }
+            else{
+                progress_bar.removeClass('progress-bar-striped')
+                    .removeClass('active');
+            }
+
+            progress_bar.removeClass('progress-bar-success')
+                .removeClass('progress-bar-warning')
+                .removeClass('progress-bar-danger');
+            if(sync_pct >= 95) progress_bar.addClass('progress-bar-success');
+            else if(sync_pct >= 30) progress_bar.addClass('progress-bar-warning');
+            else progress_bar.addClass('progress-bar-danger');
+
+            if(sync_pct < 36){
+                progress_bar_text_low.show();
+                progress_bar_text_high.hide();
+            }
+            else{
+                progress_bar_text_low.hide();
+                progress_bar_text_high.show();
+            }
+
+            progress_bar.css("width", sync_pct + "%");
+            progress_bar.attr("aria-valuenow", sync_pct);
         }
         else {
             status_text = '<i class="fa fa-flash"></i>&nbsp;&nbsp;Network: ' + daemon_status;
@@ -324,9 +360,9 @@ function update_daemon_status(status_json){
             progress_bar_text_low.show();
             progress_bar_text_high.hide();
         }
-        
+
     }, 1);
-    
+
 }
 
 
@@ -335,7 +371,7 @@ function update_wallet_info(wallet_info_json){
         var wallet_info = $.parseJSON(wallet_info_json);
         var recent_txs = wallet_info['recent_txs'];
         var recent_tx_row_tmpl = $('#recent_tx_row_templ').html();
-        
+
         if(recent_txs.length > 0){
             recent_txs_div.html('');
             for(var i=0; i < recent_txs.length; i++){
@@ -343,16 +379,16 @@ function update_wallet_info(wallet_info_json){
                 var tx_status_text = tx['status'] == "in" || tx['status'] == "out" ? "Completed" :  (tx['status'] == "pending" ? "Pending" : "In Pool");
                 if(tx['confirmation'] < 10){
                     if(tx_status_text == "Completed") tx_status_text = "Locked";
-                    tx_status_text += " (+" + tx['confirmation'] + " confirms)";                
+                    tx_status_text += " (+" + tx['confirmation'] + " confirms)";
                 }
-                
-                var tx_rendered = Mustache.render(recent_tx_row_tmpl, 
+
+                var tx_rendered = Mustache.render(recent_tx_row_tmpl,
                                                   {   'cls_in_out': tx['status'],
                                                       'tx_direction': tx['direction'],
                                                       'tx_status': tx_status_text,
                                                       'tx_fa_icon': tx['direction'] == "in" ? "mail-forward" : "reply",
                                                       'tx_id': tx['txid'],
-                                                      'tx_payment_id': tx['payment_id'], 
+                                                      'tx_payment_id': tx['payment_id'],
                                                       'tx_amount': printMoney(tx['amount']/1000000000.),
                                                       'tx_fee': printMoney(tx['fee']/1000000000.),
                                                       'tx_fee_hide': tx['fee'] > 0 ? '' : 'tx-fee-hide',
@@ -366,68 +402,68 @@ function update_wallet_info(wallet_info_json){
                 recent_txs_div.append(tx_rendered);
             }
         }
-        
-        disable_buttons(is_ready);
-        
+
+        disable_buttons(!is_ready);
+
         if(current_balance != wallet_info['balance']){
             balance_span.delay(100).fadeOut(function(){
                 balance_span.html( printMoney(wallet_info['balance']) );
             }).fadeIn('slow');
             current_balance = wallet_info['balance'];
         }
-        
+
         if(current_unlocked_balance != wallet_info['unlocked_balance']){
             unlocked_balance_span.delay(100).fadeOut(function(){
                 unlocked_balance_span.html( printMoney(wallet_info['unlocked_balance']) );
             }).fadeIn('slow');
             current_unlocked_balance = wallet_info['unlocked_balance'];
         }
-        
+
         if(current_address != wallet_info['address']){
             current_address = wallet_info['address'];
             receive_address.val(current_address);
         }
-        
+
         var table_body = $('#table_new_subaddresses tbody');
         var new_subaddress_row_tmpl = $('#new_subaddress_row_tmpl').html();
         var new_subaddresses = wallet_info['new_subaddresses'];
-        
+
         table_body.html('');
-        
+
         for(var i=0; i < new_subaddresses.length; i++){
             var subaddress = new_subaddresses[i];
-            var row_rendered = Mustache.render(new_subaddress_row_tmpl, 
+            var row_rendered = Mustache.render(new_subaddress_row_tmpl,
 					       {   'address_index': subaddress['address_index'],
 						   'address' : subaddress['address']
 					       });
-            
-            
+
+
             table_body.append(row_rendered);
         }
-        
+
         table_body = $('#table_used_subaddresses tbody');
         var used_subaddress_row_tmpl = $('#used_subaddress_row_tmpl').html();
         var used_subaddresses = wallet_info['used_subaddresses'];
-        
+
         table_body.html('');
-        
+
         for(var i=0; i < used_subaddresses.length; i++){
             var subaddress = used_subaddresses[i];
-            var row_rendered = Mustache.render(used_subaddress_row_tmpl, 
+            var row_rendered = Mustache.render(used_subaddress_row_tmpl,
 					       {   'address_index': subaddress['address_index'],
 						   'address' : subaddress['address'],
 						   'balance': subaddress['balance'],
 						   'unlocked_balance': subaddress['unlocked_balance'],
 						   'row_font_weight': subaddress['address_index'] == 0 ? 'bold' : 'normal'
 					       });
-            
-            
+
+
             table_body.append(row_rendered);
         }
-        
+
         hide_app_progress();
         $('[data-toggle="tooltip"]').tooltip();
-        
+
     }, 1);
 }
 
@@ -435,7 +471,7 @@ function show_qrcode(text){
     $('#qrcode_dialog_body').html('');
     $('#qrcode_dialog_body').qrcode({width: 200,height: 200, text: text});
     $('#qrcode_dialog').modal('show');
-    
+
 }
 
 function disable_buttons(s){
@@ -443,11 +479,11 @@ function disable_buttons(s){
     rescan_bc_btn.disable(s);
     btn_send_tx.disable(s);
     btn_fill_all_money.disable(s);
-    
+
     syncing.each(function(index, value){
         s ? $(this).show() : $(this).hide();
     });
-    
+
     balance_span.toggleClass('syncing', s);
     unlocked_balance_span.toggleClass('syncing', s);
 }
@@ -478,7 +514,7 @@ function send_tx(){
     var sweep_all = false;
     var errors = [];
     amount = parseFloat(amount);
-    
+
     if(!amount || amount < 0)
     {
         errors.push("Send amount must be a positive number!");
@@ -494,18 +530,22 @@ function send_tx(){
         }
         $('#send_amount').parent().removeClass('has-error');
     }
-    
+
     var address = $('#send_address').val();
     if(!address){
         errors.push("Address is required!");
         $('#send_address').parent().addClass('has-error');
     }
-    else if(!((address.substr(0, 4) == "Sumo" && address.length == 99) || 
-              (address.substr(0, 4) == "Sumi"  && address.length == 110) || 
+    else if(!((address.substr(0, 4) == "Sumo" && address.length == 99) ||
+              (address.substr(0, 4) == "Sumi"  && address.length == 110) ||
               (address.substr(0, 4) == "Subo"  && address.length == 98) ||
 
-              (address.substr(0, 4) == "Suto"  && address.length == 98) ||
-              (address.substr(0, 4) == "Susu"  && address.length == 98)))
+              (address.substr(0, 4) == "RYoL"  && address.length == 99) ||
+              (address.substr(0, 4) == "RYoS"  && address.length == 99) ||
+              (address.substr(0, 4) == "RYoN"  && address.length == 110) ||
+              (address.substr(0, 4) == "RYoK"  && address.length == 55)
+
+             ))
     {
         errors.push("Address is not valid!");
         $('#send_address').parent().addClass('has-error');
@@ -513,7 +553,7 @@ function send_tx(){
     else{
         $('#send_address').parent().removeClass('has-error');
     }
-    
+
     var payment_id = $('#send_payment_id').val().trim();
     if(payment_id && !(payment_id.length == 16 || payment_id.length == 64)){
         errors.push("Payment ID must be a 16 or 64 hexadecimal-characters string!");
@@ -522,7 +562,7 @@ function send_tx(){
     else{
         $('#send_payment_id').parent().removeClass('has-error');
     }
-    
+
     if(errors.length > 0){
         var msg = "<ul>";
         for(var i=0; i<errors.length;i++){
@@ -532,11 +572,11 @@ function send_tx(){
         show_alert(msg);
         return false;
     }
-    
+
     var tx_desc = $('#send_tx_desc').val().trim();
     var priority = $('#send_priority').val();
     var mixin = $('#send_mixins').val();
-    
+
     btn_send_tx.disable(true);
     show_progress("Sending coins... This can take a while for big amount...");
     app_hub.send_tx(amount, address, payment_id, priority, mixin, tx_desc, $('#checkbox_save_address').is(":checked"), sweep_all);
@@ -581,7 +621,7 @@ function copy_integrated_address(){
     setTimeout(function(){
         $('#btn_copy_integrated_address').tooltip('hide');
     }, 1000);
-    return false; 
+    return false;
 }
 
 function view_tx_detail(height, tx_id){
@@ -701,19 +741,20 @@ $(document).ready(function(){
     btn_send_tx = $('#btn_send_tx');
     btn_fill_all_money = $('#btn_fill_all_money');
     recent_txs_div = $('#recent_txs');
-    
+
     current_balance = null;
     current_unlocked_balance = null;
     current_address = null;
-    
+
     current_tx_history_page = 1;
 
+    sync_pct = 0;
     is_ready = false;
     show_app_progress("Loading wallet...");
-    
+
     receive_address = $('#receive_address');
     receive_integrated_address = $("#receive_integrated_address");
-    
+
     receive_address.focus(function() {
         var $this = $(this);
         $this.select();
@@ -722,7 +763,7 @@ $(document).ready(function(){
             return false;
         });
     });
-    
+
     receive_integrated_address.focus(function() {
         var $this = $(this);
         $this.select();
@@ -731,12 +772,12 @@ $(document).ready(function(){
             return false;
         });
     });
-    
+
     $('[data-toggle="tooltip"]').tooltip();
-    
+
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var target = $(this).attr('href');
-        
+
         if(current_tx_history_page == 1 && target == "#tx_history_tab"){
             setTimeout(function(){
                 load_tx_history(current_tx_history_page);

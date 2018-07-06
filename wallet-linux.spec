@@ -4,9 +4,9 @@ block_cipher = None
 
 
 a = Analysis(['wallet.py'],
-             pathex=['/home/mosu/release/ryo-gui-wallet'],
+             pathex=['/home/jtnw/src-new/ryo-gui-wallet'],
              binaries=[ ('/usr/lib/x86_64-linux-gnu/qt4/plugins/systemtrayicon/libsni-qt.so', 'qt4_plugins/systemtrayicon') ],
-             datas=[ ('/home/mosu/release/ryo-gui-wallet/Resources', 'Resources') ],
+             datas=[ ('/home/jtnw/src-new/ryo-gui-wallet/Resources', 'Resources') ],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],

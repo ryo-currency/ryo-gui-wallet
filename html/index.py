@@ -14,7 +14,7 @@ html ="""
         <link href="./css/light-theme.css" rel="stylesheet">
         <link href="./css/dark-theme.css" rel="stylesheet">
         <link href="./css/font-awesome.min.css" rel="stylesheet">
-        
+
         <script src="./scripts/jquery-1.9.1.min.js"></script>
         <script src="./scripts/bootstrap.min.js"></script>
         <script src="./scripts/mustache.min.js"></script>
@@ -199,7 +199,7 @@ html ="""
                                           <option value="20">Elevated (x20 fee)</option>
                                           <option value="166">Forceful (x166 fee)</option>
                                         </select>
-                                       <!--<input id="send_fee_level_slider" type="text"/>--> 
+                                       <!--<input id="send_fee_level_slider" type="text"/>-->
                                     </div>
                                 </div>
                             </div>
@@ -369,7 +369,7 @@ html ="""
                 <span id="progress_bar_text_low"><i class="fa fa-flash"></i>&nbsp;&nbsp;Connecting to network...</span>
             </div>
         </div>
-        
+
         <div class="modal" id="app_modal_dialog" style="z-index: 100000;">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -381,7 +381,7 @@ html ="""
                 </div>
             </div>
         </div>
-        
+
         <div class="modal" id="sending_modal_progress" style="z-index: 100001;" data-backdrop="static">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -403,7 +403,7 @@ html ="""
                 </div>
             </div>
         </div>
-        
+
         <div class="modal" id="qrcode_dialog" style="z-index: 100003;">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -414,19 +414,19 @@ html ="""
                     </div>
                     <div class="modal-body" style="text-align:center" id="qrcode_dialog_body"></div>
                     <div class="modal-footer">
-                        
+
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <script id="recent_tx_row_templ" type="x-tmpl-mustache">
             <div class="col-sm-12">
                 <div class="col-xs-10" style="padding-right:0">
-                    <p class="tx-list tx-{{cls_in_out}}"><i class="fa fa-{{ tx_fa_icon }}"></i> ({{tx_direction}}) <span class="tx-list txid"><a href="javascript:open_link('http://explorer.ryo-currency.com/tx/{{ tx_id }}')" title="View on blockchain explorer">{{ tx_id }}</a></span></p>
+                    <p class="tx-list tx-{{cls_in_out}}"><i class="fa fa-{{ tx_fa_icon }}"></i> ({{tx_direction}}) <span class="tx-list txid"><a href="javascript:open_link('https://explorer.ryo-currency.com/tx/{{ tx_id }}')" title="View on blockchain explorer">{{ tx_id }}</a></span></p>
                     Payment ID: <span class="tx-list tx-payment-id">{{ tx_payment_id }}</span><br/>
                     Height: <span class="tx-list tx-height">{{ tx_height }}</span>  Date: <span class="tx-list tx-date">{{ tx_date }}</span> Time: <span class="tx-list tx-time">{{ tx_time }}</span> Status: <span class="tx-list tx-status">{{ tx_status }}</span><br/>
-                    <p style="font-size:140%">Amount: <span class="tx-list tx-{{cls_in_out}} tx-amount {{tx_lock_cls}}">{{{tx_lock_icon}}}{{ tx_amount }}</span> <span class="{{ tx_fee_hide }}">Fee:</span> <span class="tx-list tx-{{cls_in_out}} tx-fee {{ tx_fee_hide }}">{{ tx_fee }}</span></p> 
+                    <p style="font-size:140%">Amount: <span class="tx-list tx-{{cls_in_out}} tx-amount {{tx_lock_cls}}">{{{tx_lock_icon}}}{{ tx_amount }}</span> <span class="{{ tx_fee_hide }}">Fee:</span> <span class="tx-list tx-{{cls_in_out}} tx-fee {{ tx_fee_hide }}">{{ tx_fee }}</span></p>
                 </div>
                 <div class="col-xs-2">
                     <button class="btn btn-warning" onclick="view_tx_detail('{{ tx_height }}', '{{ tx_id }}')">Details</button>
@@ -434,10 +434,10 @@ html ="""
                 <br clear="both"/>
             </div>
         </script>
-        
+
         <script id="tx_detail_templ" type="x-tmpl-mustache">
             <p class="tx-list tx-{{cls_in_out}}" style="font-size: 90%"><i class="fa fa-{{ tx_fa_icon }}"></i> {{tx_direction}}<br>
-                <span class="tx-list txid"><a href="javascript:open_link('http://explorer.ryo-currency.com/tx/{{ tx_id }}')" title="View on blockchain explorer">{{ tx_id }}</a></span>
+                <span class="tx-list txid"><a href="javascript:open_link('https://explorer.ryo-currency.com/tx/{{ tx_id }}')" title="View on blockchain explorer">{{ tx_id }}</a></span>
             </p>
             <ul style="font-size: 90%">
                 <li>Payment ID: <span class="tx-list tx-payment-id">{{ tx_payment_id }}</span></li>
@@ -453,7 +453,7 @@ html ="""
                 </ul>
             </div>
         </script>
-        
+
         <script id="address_book_row_templ" type="x-tmpl-mustache">
             <tr>
                 <td class="address-book-row ellipsis monospace" data-address="{{ address }}" data-payment-id="{{ payment_id }}"><a href="#" title="{{ address }}">{{ address }}</a></td>
@@ -462,11 +462,11 @@ html ="""
                 <td>
                     <button class="btn btn-danger btn-sm" onclick="delete_address({{ index }})" title="Delete from address book"><i class="fa fa-trash"></i></button>
                     <button class="btn btn-primary btn-sm address-book-row" tabindex="-1" data-address="{{ address }}" data-payment-id="{{ payment_id }}" title="Send to this address"><i class="fa fa-copy"></i></button>
-                    <button class="btn btn-primary btn-sm" tabindex="-1" onclick="show_qrcode('{{ address }}')" title="Show QR code"><i class="fa fa-qrcode"></i></button>    
+                    <button class="btn btn-primary btn-sm" tabindex="-1" onclick="show_qrcode('{{ address }}')" title="Show QR code"><i class="fa fa-qrcode"></i></button>
                 </td>
             </tr>
         </script>
-        
+
         <script id="tx_history_row" type="x-tmpl-mustache">
             <tr class="tx-list tx-{{ cls_in_out }}" style="font-weight: normal;">
                 <td>{{{ tx_status }}}</td>
@@ -478,7 +478,7 @@ html ="""
                 <td><button class="btn btn-default btn-sm" onclick="view_tx_detail('{{ tx_height }}', '{{ tx_id }}')">Details</button></td>
             </tr>
         </script>
-        
+
         <script id="tx_history_page_tmpl" type="x-tmpl-mustache">
             <li class="{{ page_prev_disabled }}">
                 <a href="javascript:load_tx_history({{ prev_page }})" aria-label="Previous">
@@ -492,18 +492,18 @@ html ="""
                 </a>
             </li>
         </script>
-        
+
         <script id="new_subaddress_row_tmpl" type="x-tmpl-mustache">
             <tr class="" style="font-weight: normal;">
                 <td class="ellipsis monospace">{{ address }}</td>
                 <td align="right">{{ address_index }}</td>
                 <td align="right">
                     <button class="btn btn-primary btn-sm" tabindex="-1" onclick="copy_subaddress(this, '{{ address }}')" data-toggle="tooltip" data-placement="bottom" data-trigger="manual" title="Address copied"><i class="fa fa-copy"></i></button>
-                    <button class="btn btn-primary btn-sm" tabindex="-1" onclick="show_qrcode('{{ address }}')" title="Show QR code"><i class="fa fa-qrcode"></i></button>    
+                    <button class="btn btn-primary btn-sm" tabindex="-1" onclick="show_qrcode('{{ address }}')" title="Show QR code"><i class="fa fa-qrcode"></i></button>
                 </td>
             </tr>
         </script>
-        
+
         <script id="used_subaddress_row_tmpl" type="x-tmpl-mustache">
             <tr class="" style="font-weight:{{ row_font_weight }};">
                 <td class="ellipsis monospace">{{ address }}</td>
@@ -512,7 +512,7 @@ html ="""
                 <td align="right">{{ address_index }}</td>
                 <td align="right">
                     <button class="btn btn-primary btn-sm" tabindex="-1" onclick="copy_subaddress(this, '{{ address }}')" data-toggle="tooltip" data-placement="bottom" data-trigger="manual" title="Address copied"><i class="fa fa-copy"></i></button>
-                    <button class="btn btn-primary btn-sm" tabindex="-1" onclick="show_qrcode('{{ address }}')" title="Show QR code"><i class="fa fa-qrcode"></i></button>    
+                    <button class="btn btn-primary btn-sm" tabindex="-1" onclick="show_qrcode('{{ address }}')" title="Show QR code"><i class="fa fa-qrcode"></i></button>
                 </td>
             </tr>
         </script>
