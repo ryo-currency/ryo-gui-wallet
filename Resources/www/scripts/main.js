@@ -279,14 +279,14 @@ function update_daemon_status(status_json){
         var wallet_height = status['wallet_height']
         var target_height = status['target_height'];
         sync_pct = target_height > 0 ? parseInt(current_height*100/target_height) : 0;
-        //is_ready = status['is_ready'] && current_height >= 137510 && wallet_height >= current_height -1;
-        is_ready = sync_pct == 100;
+        is_ready = status['is_ready'] && current_height >= 137510 && wallet_height >= current_height -1;
+        //is_ready = sync_pct == 100;
         var status_text = "Network: " + daemon_status;
         if(daemon_status == "Connected"){
             if(is_ready){
                 status_text = '<i class="fa fa-rss fa-flip-horizontal"></i>&nbsp;&nbsp;Network synchronized';
-                //status_text += " (Height: " + current_height + ")";
-                status_text += " " + current_height + "/" + target_height + " (<strong>" + sync_pct + "%</strong>)";
+                status_text += " (Height: " + current_height + ")";
+                //status_text += " " + current_height + "/" + target_height + " (<strong>" + sync_pct + "%</strong>)";
                 progress_bar.addClass('progress-bar-success')
                     .removeClass('progress-bar-striped')
                     .removeClass('active')
@@ -296,8 +296,8 @@ function update_daemon_status(status_json){
             }
             else {
                 status_text = '<i class="fa fa-refresh"></i>&nbsp;&nbsp;Synchronizing...';
-                //status_text += " (Height: " + current_height + ")";
-                status_text += " " + current_height + "/" + target_height + " (<strong>" + sync_pct + "%</strong>)";
+                status_text += " (Height: " + current_height + ")";
+                //status_text += " " + current_height + "/" + target_height + " (<strong>" + sync_pct + "%</strong>)";
                 progress_bar.addClass('progress-bar-striped')
                     .addClass('active')
                     .addClass('progress-bar-warning')
@@ -305,14 +305,16 @@ function update_daemon_status(status_json){
                     .removeClass('progress-bar-danger');
                 disable_buttons(true);
             }
-            /*
+            //*
             progress_bar.css("width", "100%");
             progress_bar.attr("aria-valuenow", 100);
             progress_bar_text_low.html('');
             progress_bar_text_high.html(status_text);
             progress_bar_text_low.hide();
             progress_bar_text_high.show();
-            */
+            //*/
+
+            /*
             progress_bar_text_low.html(status_text);
             progress_bar_text_high.html(status_text);
 
@@ -343,6 +345,7 @@ function update_daemon_status(status_json){
 
             progress_bar.css("width", sync_pct + "%");
             progress_bar.attr("aria-valuenow", sync_pct);
+            //*/
         }
         else {
             status_text = '<i class="fa fa-flash"></i>&nbsp;&nbsp;Network: ' + daemon_status;
