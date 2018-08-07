@@ -260,7 +260,7 @@ html ="""
                             <label for="seed" style="font-weight: bold;margin-right: 20px">Mnemonic Seed:</label>    <button id="paste_seed_btn" type="button" class="btn btn-warning btn-sm" style="text-transform: none" onclick="paste_seed()"><i class="fa fa-paste"></i> Paste</button>
                             <textarea id="seed" class="form-control" placeholder="Paste mnemonic seed words here (use [Paste] button above or press Ctrl+V)" style="height:80px;margin-bottom:10px;margin-top:10px;font-size:100%"></textarea>
                             <button id="restore_wallet_btn" type="button" class="btn btn-primary" onclick="restore_wallet()"><i class="fa fa-undo"></i> Restore</button>
-                            <input id="restore_height_txt" type="text" class="form-control" style="display: none; float:right; width: 100px" value="0"/> <label for="restore_height_txt" style="font-weight: bold; display:none; float:right; margin-right:20px;">Restore from height#</label>
+                            <input id="restore_height_txt" type="text" class="form-control" style="float:right; width: 100px" value="0"/> <label for="restore_height_txt" style="font-weight: bold; float:right; margin-right:20px;">Restore from height#</label>
                         </div>
                     </div>
                 </div>

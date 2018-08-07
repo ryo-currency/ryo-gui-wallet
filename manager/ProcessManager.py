@@ -26,7 +26,8 @@ DETACHED_PROCESS = 0x00000008  # forcing the child to have no console at all
 class ProcessManager(Thread):
     def __init__(self, proc_args, proc_name=""):
         Thread.__init__(self)
-        args_array = proc_args.encode( sys.getfilesystemencoding() ).split(u' ')
+        #args_array = proc_args.encode( sys.getfilesystemencoding() ).split(u' ')
+        args_array = proc_args
         self.proc = Popen(args_array,
                           shell=False,
                           stdout=PIPE, stderr=STDOUT, stdin=PIPE,
@@ -84,6 +85,8 @@ class SumokoindManager(ProcessManager):
             testnet_flag = '--'
 
         proc_args = u'%s/bin/ryod --add-priority-node 185.134.22.134:19733 --log-level %d --block-sync-size %d %s' % (resources_path, log_level, block_sync_size, testnet_flag)
+        proc_args = [u'%s/bin/ryod'%resources_path, '--add-priority-node', '185.134.22.134:19733', '--log-level', '%d'%log_level, '--block-sync-size', '%d'%block_sync_size, testnet_flag]
+
         ProcessManager.__init__(self, proc_args, "ryod")
         self.synced = Event()
         self.stopped = Event()
@@ -109,19 +112,23 @@ class SumokoindManager(ProcessManager):
 class WalletCliManager(ProcessManager):
     fail_to_connect_str = "wallet failed to connect to daemon"
 
-    def __init__(self, resources_path, wallet_file_path, wallet_log_path, restore_wallet=False, restore_height=0):
+    def __init__(self, resources_path, wallet_file_path, wallet_log_path, restore_wallet=False, restore_height=0, seed=''):
         if "--testnet" in sys.argv[1:]:
             testnet_flag = '--testnet'
         else:
             testnet_flag = '--'
 
         if not restore_wallet:
-            wallet_args = u'%s/bin/ryo-wallet-cli --generate-new-wallet=%s --log-file=%s %s' \
+            wallet_args = u'%s/bin/ryo-wallet-cli --create-address-file --generate-new-wallet=%s --log-file=%s %s' \
                                                 % (resources_path, wallet_file_path, wallet_log_path, testnet_flag)
+            wallet_args = [u'%s/bin/ryo-wallet-cli'%resources_path, '--create-address-file', '--generate-new-wallet', wallet_file_path, '--log-file', wallet_log_path, testnet_flag]
+
         else:
-            restore_height = 0
-            wallet_args = u'%s/bin/ryo-wallet-cli --log-file=%s --restore-deterministic-wallet --restore-height %d %s' \
-                                                % (resources_path, wallet_log_path, restore_height, testnet_flag)
+            wallet_args = u'%s/bin/ryo-wallet-cli --create-address-file --log-file=%s --restore-deterministic-wallet --restore-height %d --electrum-seed \'%s\' %s' \
+                                                % (resources_path, wallet_log_path, restore_height, seed, testnet_flag)
+            wallet_args = [u'%s/bin/ryo-wallet-cli'%resources_path, '--create-address-file', '--log-file', wallet_log_path, '--restore-deterministic-wallet', '--restore-height', '%d'%restore_height, '--electrum-seed', seed, testnet_flag]
+
+        print(wallet_file_path)
         ProcessManager.__init__(self, wallet_args, "ryo-wallet-cli")
         self.ready = Event()
         self.last_error = ""
@@ -134,6 +141,8 @@ class WalletCliManager(ProcessManager):
         err_str = "Error:"
 
         for line in iter(self.proc.stdout.readline, b''):
+            log("[%s]>>> %s" % (self.proc_name, line.rstrip()), LEVEL_DEBUG, self.proc_name)
+
             m_height = height_regex.search(line)
             if m_height:
                 self.block_height = int(m_height.group(1))
@@ -148,8 +157,7 @@ class WalletCliManager(ProcessManager):
                 log("[%s]>>> %s" % (self.proc_name, line.rstrip()), LEVEL_ERROR, self.proc_name)
             elif m_height:
                 log("[%s]>>> %s" % (self.proc_name, line.rstrip()), LEVEL_INFO, self.proc_name)
-#             else:
-#                 log("[%s]>>> %s" % (self.proc_name, line.rstrip()), LEVEL_DEBUG, self.proc_name)
+
 
         if not self.proc.stdout.closed:
             self.proc.stdout.close()
@@ -183,12 +191,15 @@ class WalletRPCManager(ProcessManager):
         wallet_rpc_args = u'%s/bin/ryo-wallet-rpc --disable-rpc-login --prompt-for-password --wallet-file %s --log-file %s --rpc-bind-port %d --log-level %d %s' \
                                             % (resources_path, wallet_file_path, wallet_log_path, rpc_bind_port, log_level, testnet_flag)
 
+        wallet_rpc_args = [u'%s/bin/ryo-wallet-rpc'%resources_path, '--disable-rpc-login', '--prompt-for-password', '--wallet-file', wallet_file_path, '--log-file', wallet_log_path, '--rpc-bind-port', '%d'%rpc_bind_port, '--log-level', '%d'%log_level, testnet_flag]
+
         ProcessManager.__init__(self, wallet_rpc_args, "ryo-wallet-rpc")
         sleep(0.2)
         self.send_command(wallet_password)
 
         self.rpc_request = WalletRPCRequest(app, self.user_agent)
 #         self.rpc_request.start()
+        self.last_error = ""
         self._ready = False
         self.block_height = 0
         self.is_password_invalid = Event()
