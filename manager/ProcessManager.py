@@ -84,7 +84,7 @@ class SumokoindManager(ProcessManager):
         else:
             testnet_flag = '--'
 
-        proc_args = u'%s/bin/ryod --add-priority-node 185.134.22.134:19733 --log-level %d --block-sync-size %d %s' % (resources_path, log_level, block_sync_size, testnet_flag)
+        #proc_args = u'%s/bin/ryod --add-priority-node 185.134.22.134:19733 --log-level %d --block-sync-size %d %s' % (resources_path, log_level, block_sync_size, testnet_flag)
         proc_args = [u'%s/bin/ryod'%resources_path, '--add-priority-node', '185.134.22.134:19733', '--log-level', '%d'%log_level, '--block-sync-size', '%d'%block_sync_size, testnet_flag]
 
         ProcessManager.__init__(self, proc_args, "ryod")
@@ -119,14 +119,14 @@ class WalletCliManager(ProcessManager):
             testnet_flag = '--'
 
         if not restore_wallet:
-            wallet_args = u'%s/bin/ryo-wallet-cli --create-address-file --generate-new-wallet=%s --log-file=%s %s' \
-                                                % (resources_path, wallet_file_path, wallet_log_path, testnet_flag)
+            #wallet_args = u'%s/bin/ryo-wallet-cli --create-address-file --generate-new-wallet=%s --log-file=%s %s' \
+                #% (resources_path, wallet_file_path, wallet_log_path, testnet_flag)
             wallet_args = [u'%s/bin/ryo-wallet-cli'%resources_path, '--create-address-file', '--generate-new-wallet', wallet_file_path, '--log-file', wallet_log_path, testnet_flag]
 
         else:
-            wallet_args = u'%s/bin/ryo-wallet-cli --create-address-file --log-file=%s --restore-deterministic-wallet --restore-height %d --electrum-seed \'%s\' %s' \
-                                                % (resources_path, wallet_log_path, restore_height, seed, testnet_flag)
-            wallet_args = [u'%s/bin/ryo-wallet-cli'%resources_path, '--create-address-file', '--log-file', wallet_log_path, '--restore-deterministic-wallet', '--restore-height', '%d'%restore_height, '--electrum-seed', seed, testnet_flag]
+            #wallet_args = u'%s/bin/ryo-wallet-cli --create-address-file --log-file=%s --restore-deterministic-wallet --restore-height %d --electrum-seed \'%s\' %s' \
+                #% (resources_path, wallet_log_path, restore_height, seed, testnet_flag)
+            wallet_args = [u'%s/bin/ryo-wallet-cli'%resources_path, '--create-address-file', '--log-file', wallet_log_path, '--restore-deterministic-wallet', '--electrum-seed', seed, testnet_flag]
 
         print(wallet_file_path)
         ProcessManager.__init__(self, wallet_args, "ryo-wallet-cli")
@@ -188,8 +188,8 @@ class WalletRPCManager(ProcessManager):
 
         log_level = 2
 
-        wallet_rpc_args = u'%s/bin/ryo-wallet-rpc --disable-rpc-login --prompt-for-password --wallet-file %s --log-file %s --rpc-bind-port %d --log-level %d %s' \
-                                            % (resources_path, wallet_file_path, wallet_log_path, rpc_bind_port, log_level, testnet_flag)
+        #wallet_rpc_args = u'%s/bin/ryo-wallet-rpc --disable-rpc-login --prompt-for-password --wallet-file %s --log-file %s --rpc-bind-port %d --log-level %d %s' \
+            #% (resources_path, wallet_file_path, wallet_log_path, rpc_bind_port, log_level, testnet_flag)
 
         wallet_rpc_args = [u'%s/bin/ryo-wallet-rpc'%resources_path, '--disable-rpc-login', '--prompt-for-password', '--wallet-file', wallet_file_path, '--log-file', wallet_log_path, '--rpc-bind-port', '%d'%rpc_bind_port, '--log-level', '%d'%log_level, testnet_flag]
 
