@@ -81,8 +81,9 @@ class Hub(QObject):
                 copy2(wallet_filename, os.path.join(wallet_dir_path, new_wallet_file))
                 copy2(wallet_key_filename, os.path.join(wallet_dir_path, \
                                                            new_wallet_file + '.keys'))
-                #copy2(wallet_address_filename, os.path.join(wallet_dir_path, \
-                    #new_wallet_file + '.address.txt'))
+                if os.path.exists(wallet_address_filename):
+                    copy2(wallet_address_filename, os.path.join(wallet_dir_path, \
+                                                                new_wallet_file + '.address.txt'))
             except IOError, err:
                 self._detail_error_msg("Importing Wallet", "Error importing wallet!", str(err))
                 self.ui.reset_wallet()
@@ -109,8 +110,9 @@ class Hub(QObject):
         self.app_process_events()
 
         wallet_address_filepath = new_wallet_file + ".address.txt"
-        #wallet_address = readFile(wallet_address_filepath)
         wallet_address = ''
+        if os.path.exists(wallet_address_filepath):
+            wallet_address = readFile(wallet_address_filepath)
         self.ui.wallet_info.wallet_filepath = new_wallet_file
         self.ui.wallet_info.wallet_address = wallet_address
         self.ui.wallet_info.is_loaded =True
@@ -150,8 +152,11 @@ class Hub(QObject):
                 self.ui.reset_wallet()
                 return False
 
-        wallet_address = self.ui.wallet_rpc_manager.rpc_request.get_address()
-        self.ui.wallet_info.wallet_address = wallet_address["addresses"][0]["address"]
+        if wallet_address == '':
+            wallet_address = self.ui.wallet_rpc_manager.rpc_request.get_address()
+            self.ui.wallet_info.wallet_address = wallet_address["addresses"][0]["address"]
+        else:
+            self.ui.wallet_info.wallet_address = wallet_address
 
         self.ui.wallet_info.wallet_password = hashlib.sha256(wallet_password).hexdigest()
         self._show_wallet_info()
@@ -246,20 +251,19 @@ class Hub(QObject):
 #                     self.wallet_cli_manager.send_command("exit")
                 else: # restore wallet
                     self.wallet_cli_manager = WalletCliManager(resources_path, \
-                                                wallet_filepath, wallet_log_path, True, restore_height)
+                                                               wallet_filepath, wallet_log_path, True, restore_height, mnemonic_seed)
                     self.wallet_cli_manager.start()
                     self.app_process_events(1)
                     self.wallet_cli_manager.send_command(wallet_filepath)
                     #self.app_process_events(0.5)
                     #self.wallet_cli_manager.send_command("Y")
-                    self.app_process_events(1)
-                    self.wallet_cli_manager.send_command(mnemonic_seed)
-                    self.app_process_events(1)
-                    self.wallet_cli_manager.send_command(wallet_password)
-                    self.app_process_events(1)
-                    self.wallet_cli_manager.send_command(wallet_password)
                     #self.app_process_events(1)
-                    #self.wallet_cli_manager.send_command(str(restore_height))
+                    #self.wallet_cli_manager.send_command(mnemonic_seed)
+                    self.app_process_events(1)
+                    self.wallet_cli_manager.send_command(wallet_password)
+                    self.app_process_events(1)
+                    self.wallet_cli_manager.send_command(wallet_password)
+                    self.app_process_events(1)
                 counter = 0
                 while not self.wallet_cli_manager.is_ready():
                     self.app_process_events(1)
@@ -281,12 +285,13 @@ class Hub(QObject):
         while not self._is_wallet_files_existed(wallet_filepath):
             self.app_process_events(1)
             counter += 1
-            if counter > 10:
+            if counter > 30:
                 break
 
         if self._is_wallet_files_existed(wallet_filepath):
-            #wallet_address = readFile(wallet_filepath + ".address.txt")
             wallet_address = ''
+            if os.path.exists(wallet_filepath + ".address.txt"):
+                wallet_address = readFile(wallet_filepath + ".address.txt")
             self.ui.wallet_info.wallet_filepath = wallet_filepath
             self.ui.wallet_info.wallet_password = hashlib.sha256(wallet_password).hexdigest()
             self.ui.wallet_info.wallet_address = wallet_address
@@ -321,8 +326,11 @@ class Hub(QObject):
                     self.ui.reset_wallet(delete_files=False)
                     return
 
-            wallet_address = self.ui.wallet_rpc_manager.rpc_request.get_address()
-            self.ui.wallet_info.wallet_address = wallet_address["addresses"][0]["address"]
+            if wallet_address == '':
+                wallet_address = self.ui.wallet_rpc_manager.rpc_request.get_address()
+                self.ui.wallet_info.wallet_address = wallet_address["addresses"][0]["address"]
+            else:
+                self.ui.wallet_info.wallet_address = wallet_address
 
             self._show_wallet_info()
             self.ui.wallet_info.save()
